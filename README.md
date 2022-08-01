@@ -1,14 +1,6 @@
-# Welcome to your CDK TypeScript project
+# SquidBot
+Repo for the discord bot using webhooks for my summoners war guild
 
-This is a BLANK(s) project for CDK development with TypeScript.
+Pings Guild members for defense changes on set days
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
-
-## Useful commands
-
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `cdk deploy`      deploy this stack to your default AWS account/region
-* `cdk diff`        compare deployed stack with current state
-* `cdk synth`       emits the synthesized CloudFormation template
+Uses this website (https://swq.jp/l/en-US/) to look for new verified codes and posts the link and reward info
