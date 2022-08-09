@@ -21,7 +21,8 @@ You can clone this repo and deploy this CDK app yourself, or create a webhook fo
 * AWS SSM parameters to store the discord webhooks and used codes. You can change these references in the Lambda code under /lib/lambda/functions.
 * AWS Credentials to deploy with CDK. Refer to [this guide.](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html)
 
-1. Install CDK: ```sh
+1. Install CDK: 
+```sh
 npm install -g aws-cdk
 ```
 2. Clone the repository:
