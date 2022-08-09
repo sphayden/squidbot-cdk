@@ -18,10 +18,10 @@ You can clone this repo and deploy this CDK app yourself, or
 ### Prerequisites
 * Install [Node.js](https://nodejs.org/en/download/)
 1. cdk
-  ```sh
-  npm install aws-cdk-lib
-  ```
+```sh
+npm install aws-cdk-lib
+```
 2. Clone the repo
-   ```sh
-   git clone https://github.com/sphayden/squidbot-cdk.git
-   ```
+```sh
+git clone https://github.com/sphayden/squidbot-cdk.git
+```
