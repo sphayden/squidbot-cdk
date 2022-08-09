@@ -16,7 +16,9 @@ Total costs for this app depends on how often the EventBridge event is set to tr
 You can clone this repo and deploy this CDK app yourself, or 
 
 ### Prerequisites
-* Install [Node.js](https://nodejs.org/en/download/)
+* [Node.js](https://nodejs.org/en/download/) needs to be installed.
+* AWS SSM parameters to store the discord webhooks and used codes. You can change these references in the Lambda code under /lib/lambda/functions
+
 1. cdk
 ```sh
 npm install aws-cdk-lib
@@ -25,3 +27,6 @@ npm install aws-cdk-lib
 ```sh
 git clone https://github.com/sphayden/squidbot-cdk.git
 ```
+3. CD into the directory the repository was cloned into.
+
+4. Change the references to the SSM parameters for the used codes and the discord webhooks.
