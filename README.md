@@ -9,3 +9,19 @@ Uses Discord webhooks to post embeds with the reward info taken from https://swq
 The infrastructure for this application is hosted on AWS and uses the [AWS CDK](https://aws.amazon.com/cdk/) to deploy and update it programatically. 
 
 Total costs for this app depends on how often the EventBridge event is set to trigger but can easily be less than $1 a month.
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+You can clone this repo and deploy this CDK app yourself, or 
+
+### Prerequisites
+* Install [Node.js](https://nodejs.org/en/download/)
+1. cdk
+  ```sh
+  npm install aws-cdk-lib
+  ```
+2. Clone the repo
+   ```sh
+   git clone https://github.com/sphayden/squidbot-cdk.git
+   ```
