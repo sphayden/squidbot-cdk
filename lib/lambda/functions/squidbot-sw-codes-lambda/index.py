@@ -22,6 +22,19 @@ except Exception as e:
 
     print(f"Error in Imports {e}")
 
+def validate_codes(code_links):
+    valid_codes = []
+    headers_mobile = { 'User-Agent' : 'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B137 Safari/601.1'}
+    for link in code_links:
+        B_response = http.request('GET',link.get('Coupon_code'), headers=headers_mobile)
+        B_soup = BeautifulSoup(B_response.data, 'html.parser')
+
+        if B_soup.find_all("h1", {"class": "pop_tit"}):
+            print(f'Invalid code link: {link}')
+        else:
+            valid_codes.append(link)
+    return valid_codes
+
 def get_existing_codes() -> list:
     print("Getting used codes...")
     try:
@@ -102,7 +115,8 @@ def invoke_discord_lambda(valid_codes):
 def lambda_handler(event, context):
     existing_codes = get_existing_codes()
     existing_codes = ast.literal_eval(existing_codes)
-    valid_codes, existing_codes = get_valid_codes(existing_codes)
+    new_codes, existing_codes = get_valid_codes(existing_codes)
+    valid_codes = validate_codes(new_codes)
     response = False
     if len(valid_codes) >= 1:
         response = invoke_discord_lambda(valid_codes)

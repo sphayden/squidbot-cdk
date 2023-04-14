@@ -8,12 +8,6 @@ import { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
 export class SquidbotCdkStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-    // SSM Parameter for webhook URLS
-    // const SquidbotDiscordWebhooks = ssm.StringParameter.fromStringParameterAttributes(this, 'SSMValue', {
-    //   parameterName: '/sph/discord/webhooks',
-    //   // 'version' can be specified but is optional.
-    // }).stringValue;
-
     // DynamoDB Table for Squidbot
     const SquidbotDynamoDBTable = new dynamodb.Table(this, 'SquidbotRewardsMappingTable', {
       partitionKey: {
@@ -71,7 +65,7 @@ export class SquidbotCdkStack extends cdk.Stack {
       runtime: lambda.Runtime.PYTHON_3_7,
       handler: 'index.lambda_handler',
       code: lambda.Code.fromAsset('./lib/lambda/functions/squidbot-sw-codes-lambda'),
-      layers: [scraping_layer, bs4_layer],
+      //layers: [scraping_layer, bs4_layer],
       role: SquidbotLambdaRole,
       timeout: cdk.Duration.seconds(300),
       environment: {
