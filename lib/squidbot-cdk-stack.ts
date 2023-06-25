@@ -116,9 +116,19 @@ export class SquidbotCdkStack extends cdk.Stack {
 
     const squidbotStateMachine = new sfn.StateMachine(this, 'SquidbotStateMachine', {
       definition: new tasks.LambdaInvoke(this, 'SquidbotSWTokenInvoke', {
+        lambdaFunction: SquidbotDiscordLambda,
+      }).next(new tasks.LambdaInvoke(this, 'SWCheckForCodes', {
         lambdaFunction: SquidbotScrapingLambda,
-      }).next(new sfn.Succeed(this, 'Succeed')),
+      })).next(new tasks.LambdaInvoke(this, 'CheckExpireCodes', {
+        lambdaFunction: SquidbotExpireCodeLambda
+      })).next(new sfn.Succeed(this, 'Succeed')),
     });
+
+    // const squidbotStateMachine = new sfn.StateMachine(this, 'SquidbotStateMachine', {
+    //   definition: new tasks.LambdaInvoke(this, 'SquidbotSWTokenInvoke', {
+    //     lambdaFunction: SquidbotScrapingLambda,
+    //   }).next(new sfn.Succeed(this, 'Succeed')),
+    // });
     Tags.of(squidbotStateMachine).add('project', 'squidbot');
 
     // Events for Squidbot
