@@ -139,7 +139,7 @@ export class SquidbotCdkStack extends cdk.Stack {
     });
     Tags.of(SquidbotEvents).add('project', 'squidbot');
 
-    SquidbotEvents.addTarget(new targets.LambdaFunction(SquidbotScrapingLambda));
+    SquidbotEvents.addTarget(new targets.SfnStateMachine(squidbotStateMachine));
   }
 }
 
