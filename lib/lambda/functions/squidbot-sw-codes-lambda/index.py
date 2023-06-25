@@ -80,7 +80,7 @@ def get_valid_codes(used_codes):
         return False
         
 def lambda_handler(event, context):
-    existing_codes = get_active_codes('active_codes')
+    existing_codes = get_active_codes()
     #existing_codes = ast.literal_eval(existing_codes)
     new_codes, existing_codes = get_valid_codes(existing_codes)
     valid_codes = validate_codes(new_codes)

@@ -78,7 +78,7 @@ def expire_code(code: dict, webhooks: list) -> None:
             print(data)
             for i, embed in enumerate(data['embeds']):
                 data['embeds'][i]['title'] = f"EXPIRED: {current_time}"
-                data['embeds'][i]['thumbnail']['url'] = "https://sph-sw-bot-image-hosting.s3.us-east-2.amazonaws.com/sw-logo-expired.png"
+                data['embeds'][i]['thumbnail']['url'] = "https://sph-sw-bot-image-hosting.s3.us-east-2.amazonaws.com/sw-x.png"
             data_dump = json.dumps(data)
             print(type(data))
             response = http.request("PATCH", url, body=data_dump, headers={'Content-Type': 'application/json'})

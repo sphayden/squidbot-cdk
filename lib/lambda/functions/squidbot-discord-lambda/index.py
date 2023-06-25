@@ -45,7 +45,7 @@ def send_codes(valid_code, webhooks):
 
     code['Code_rewards'] = "  ".join(code['Code_rewards'])
     embed = DiscordEmbed(title=f"{code['Coupon_code'].split('http://withhive.me/313/')[1]}", colour=0x4262F4)
-    embed.set_thumbnail(url="https://sph-sw-bot-image-hosting.s3.us-east-2.amazonaws.com/sw-logo.png")
+    embed.set_thumbnail(url="https://sph-sw-bot-image-hosting.s3.us-east-2.amazonaws.com/sw.png")
     embed.add_embed_field(name="Code Link", value=code['Coupon_code'])
     embed.add_embed_field(name="Rewards", value=f"{code['Code_rewards']}")
     webhook.add_embed(embed)
@@ -91,8 +91,6 @@ def lambda_handler(event, context):
     #event = json.loads(event)
     print(f"event: {event}")
     webhooks = get_webhooks()
-    # webhooks = ast.literal_eval(get_webhooks())
-    # webhooks = ["https://discord.com/api/webhooks/1002311639309230221/_dsqpxxGsnFo9yGtgHt_4FrNJMyRP1HOxXur18flgFGES6I4o-JXsEjuG1nSbY4E1wTs", "https://discord.com/api/webhooks/1096999076282781907/tkLR4ib33D4ZvCXWHLV2D1Gmy9itG9EqdVJBXqMYKF6S4EOtHmLtoMgbOb7kq9C2e6hh"]
     for code in event['codes']:
         response = send_codes(code, webhooks)
         write_active_codes(code.get('Coupon_code').split('http://withhive.me/313/')[1], response)

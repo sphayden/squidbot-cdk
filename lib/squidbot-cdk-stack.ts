@@ -72,7 +72,9 @@ export class SquidbotCdkStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(300),
       environment: {
         'SW_REWARDS_TABLE': SquidbotDynamoDBTable.tableName,
-        'DISCORD_WEBHOOK_TABLE': SquidbotDiscordWebhookDynamoTable.tableName
+        'DISCORD_WEBHOOK_TABLE': SquidbotDiscordWebhookDynamoTable.tableName,
+        'SW_ACTIVE_CODES_TABLE': SquidbotActiveCodeDynamoTable.tableName,
+        'SW_EXPIRED_CODES_TABLE': SquidbotExpiredCodeDynamoTable.tableName,
       }
     });
     Tags.of(SquidbotDiscordLambda).add('project', 'squidbot');
@@ -92,7 +94,9 @@ export class SquidbotCdkStack extends cdk.Stack {
       role: SquidbotLambdaRole,
       timeout: cdk.Duration.seconds(300),
       environment: {
-        'DISCORD_LAMBDA': SquidbotDiscordLambda.functionName
+        'SW_ACTIVE_CODES_TABLE': SquidbotActiveCodeDynamoTable.tableName,
+        'SW_EXPIRED_CODES_TABLE': SquidbotExpiredCodeDynamoTable.tableName,
+        'DISCORD_WEBHOOK_TABLE':  SquidbotDiscordWebhookDynamoTable.tableName
       }
       
     });
@@ -116,19 +120,17 @@ export class SquidbotCdkStack extends cdk.Stack {
 
     const squidbotStateMachine = new sfn.StateMachine(this, 'SquidbotStateMachine', {
       definition: new tasks.LambdaInvoke(this, 'SquidbotSWTokenInvoke', {
-        lambdaFunction: SquidbotDiscordLambda,
-      }).next(new tasks.LambdaInvoke(this, 'SWCheckForCodes', {
         lambdaFunction: SquidbotScrapingLambda,
+        outputPath: "$.Payload",
+      }).next(new tasks.LambdaInvoke(this, 'SWCheckForCodes', {
+        lambdaFunction: SquidbotDiscordLambda,
+        outputPath: "$.Payload",
+        inputPath: "$",
       })).next(new tasks.LambdaInvoke(this, 'CheckExpireCodes', {
         lambdaFunction: SquidbotExpireCodeLambda
       })).next(new sfn.Succeed(this, 'Succeed')),
     });
 
-    // const squidbotStateMachine = new sfn.StateMachine(this, 'SquidbotStateMachine', {
-    //   definition: new tasks.LambdaInvoke(this, 'SquidbotSWTokenInvoke', {
-    //     lambdaFunction: SquidbotScrapingLambda,
-    //   }).next(new sfn.Succeed(this, 'Succeed')),
-    // });
     Tags.of(squidbotStateMachine).add('project', 'squidbot');
 
     // Events for Squidbot
