@@ -1,17 +1,8 @@
 try:
     import json
-    import itertools
-    from selenium.webdriver import Chrome
-    from selenium.webdriver.chrome.options import Options
-    import time
     from bs4 import BeautifulSoup
     import os
-    import shutil
-    import uuid
     import boto3
-    from datetime import datetime
-    import datetime
-    import ast
     import urllib3
 
     http = urllib3.PoolManager()
@@ -34,33 +25,25 @@ def validate_codes(code_links):
         else:
             valid_codes.append(link)
     return valid_codes
-
-def get_existing_codes() -> list:
-    print("Getting used codes...")
+      
+def get_active_codes() -> list:
     try:
-        client = boto3.client('ssm')
-        response = client.get_parameter(Name="/sph/sw/used-codes-list")
-        return response['Parameter']['Value']
-    except Exception as e:
-        print(f"Error getting secret: {e}")
-        return None
+        dynamodb = boto3.resource('dynamodb', region_name='us-east-2')
         
-def write_to_ssm(existing_codes):
-    print("Updating used codes...")
-    try:
-        client = boto3.client('ssm')
-        response = client.put_parameter(
-            Name='/sph/sw/used-codes-list',
-            Description='SW used codes',
-            Value=str(existing_codes),
-            Type='String',
-            Overwrite=True
-        )
-        return True
-    except Exception as e:
-        print(f"Error getting secret: {e}")
-        return None
-    
+        table = dynamodb.Table(os.environ['SW_ACTIVE_CODES_TABLE'])
+        
+        response = table.scan()
+        data_items = response['Items']
+        while 'LastEvaluatedKey' in response:
+            response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+            data_items.extend(response['Items'])
+            
+        return [data.get('code_id') for data in data_items]
+    except  Exception as e:
+        log_message = f"Error getting active codes: {e}"
+        print(log_message)
+        raise Exception(log_message)
+        
 def get_valid_codes(used_codes):
     valid_codes = []
     existing_codes = used_codes
@@ -96,34 +79,14 @@ def get_valid_codes(used_codes):
         print(f"Failed due to {e}")
         return False
         
-def invoke_discord_lambda(valid_codes):
-    print(f"Invoking webooks")
-    payload = {'codes': valid_codes}
-    payload = json.dumps(payload)
-    try:
-        client = boto3.client('lambda')
-        response = client.invoke(
-            FunctionName=os.environ['DISCORD_LAMBDA'],
-            InvocationType='RequestResponse',
-            Payload=payload
-        )
-        return response
-    except Exception as e:
-        print(f"Error invoking lambda function: {e}")
-        return False
-
 def lambda_handler(event, context):
-    existing_codes = get_existing_codes()
-    existing_codes = ast.literal_eval(existing_codes)
+    existing_codes = get_active_codes('active_codes')
+    #existing_codes = ast.literal_eval(existing_codes)
     new_codes, existing_codes = get_valid_codes(existing_codes)
     valid_codes = validate_codes(new_codes)
-    response = False
-    if len(valid_codes) >= 1:
-        response = invoke_discord_lambda(valid_codes)
-    if response:
-        write_to_ssm(existing_codes)
-    print(valid_codes)
-    return None
+    response = {'codes': valid_codes}
+    print(response)
+    return response
     
 
 
