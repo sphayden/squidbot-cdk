@@ -65,17 +65,20 @@ def is_inactive(code: str) -> bool:
         raise Exception(log_message)
     
 def expire_code(code: dict, webhooks: list) -> None:
-    print(f"EXPIRE ME: {code}")
+    print(f"EXPIRE ME: {code}: {webhooks}")
     try:
         #current_time = datetime.now().strftime("%B %d %Y %H:%M:%S %p")
         current_time = f"<t:{int(round(time.time()))}:f>"
         for i, message in enumerate(code.get('message_ids')):
-            url = f'{webhooks[i]}/messages/{message}'
+            print(f"Message: {message}")
+            for webhook in webhooks:
+                if message.get('webhook_id') in webhook:
+                    url = f"{webhook}/messages/{message.get('message_id')}"
             print(f"Expiring message for {url}")
             http = urllib3.PoolManager()
             response = http.request('GET',url)
             data = json.loads(response.data)
-            print(data)
+            print(f"Response from http request: {data}")
             for i, embed in enumerate(data['embeds']):
                 data['embeds'][i]['title'] = f"EXPIRED: {current_time}"
                 data['embeds'][i]['thumbnail']['url'] = "https://sph-sw-bot-image-hosting.s3.us-east-2.amazonaws.com/sw-x.png"
