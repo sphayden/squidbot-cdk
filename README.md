@@ -22,7 +22,6 @@ You can clone this repo and deploy this CDK app yourself, or create a webhook fo
 ### Prerequisites
 * [Node.js](https://nodejs.org/en/download/) needs to be installed.
 * An AWS Account.
-* AWS SSM parameters to store the discord webhooks and used codes. You can change these references in the Lambda code under /lib/lambda/functions.
 * AWS Credentials to deploy with CDK. Refer to [this guide.](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html)
 
 ### Installation steps
@@ -37,18 +36,16 @@ git clone https://github.com/sphayden/squidbot-cdk.git
 ```
 3. CD into the directory the repository was cloned into.
 
-4. Change the references to the SSM parameters for the used codes and the discord webhooks.
-
-5. Bootstrap the CDK using your AWS Account information:
+4. Bootstrap the CDK using your AWS Account information:
 ```sh
 cdk bootstrap aws://ACCOUNT-NUMBER/REGION
 ```
-6. Deploy the CDK App:
+5. Deploy the CDK App:
 ```sh
 cdk deploy
 ```
-7. Create webhook in your discord channel following [these instructions.](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks)
+6. Create webhook in your discord channel following [these instructions.](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks)
 
-8. Add webhook to the SSM parameter as a list object. (i.e., ['webhook'])
+7. Add webhook to the DynamoDB Table and test the step function execution.
 
-9. Enjoy!
+8. Enjoy!
