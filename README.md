@@ -1,11 +1,11 @@
 # SquidBot-cdk
 <h3>CDK app to deploy infrastructure for automatically posting Summoners War codes to discord.</h3>
 
-Uses Discord webhooks to post embeds with the reward info taken from https://swq.jp/l/en-US/. Embeds look like this ![Embed example](example-images/example-coupon.png)
+Uses Discord webhooks to post embeds with the reward info taken from https://swq.jp/l/en-US/. Embeds look like this: <br /> ![Embed example](example-images/example-coupon.png) <br />
 
 There is a custom step in the process that verifies it is a legit code, so no troll or non-function codes!
 
-Also will expire codes once they no longer become available to redeem, i.e, expired and invalid. After expiring the embed will show when it expired. Example: ![Expired example](example-images/coupon-expired-example.png)
+Also will expire codes once they no longer become available to redeem, i.e, expired and invalid. After expiring the embed will show when it expired. Example:<br /> ![Expired example](example-images/coupon-expired-example.png) <br />
 
 
 <h1>Infrastructure Info</h1>
