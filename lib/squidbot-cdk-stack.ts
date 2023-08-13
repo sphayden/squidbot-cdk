@@ -63,6 +63,13 @@ export class SquidbotCdkStack extends cdk.Stack {
     });
     Tags.of(SquidbotDiscordLayer).add('project', 'squidbot');
 
+    const SquidbotRequestsLayer = new lambda.LayerVersion(this, 'SquidbotRequestsLayer', {
+      code: lambda.Code.fromAsset('./lib/lambda/layers/squidbot-requests-layer'),
+      compatibleRuntimes: [lambda.Runtime.PYTHON_3_9],
+      description: 'Layer for using requests',
+    });
+    Tags.of(SquidbotDiscordLayer).add('project', 'squidbot');
+
     const SquidbotDiscordLambda = new lambda.Function(this, 'SquidbotSWDiscordFunction', {
       runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'index.lambda_handler',
@@ -90,7 +97,10 @@ export class SquidbotCdkStack extends cdk.Stack {
       runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'index.lambda_handler',
       code: lambda.Code.fromAsset('./lib/lambda/functions/squidbot-sw-codes-lambda'),
-  
+      layers: [
+        SquidbotRequestsLayer,
+        bs4_layer
+      ],
       role: SquidbotLambdaRole,
       timeout: cdk.Duration.seconds(300),
       environment: {

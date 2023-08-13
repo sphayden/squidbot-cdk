@@ -4,6 +4,7 @@ try:
     import os
     import boto3
     import urllib3
+    import requests
 
     http = urllib3.PoolManager()
 
@@ -25,6 +26,64 @@ def validate_codes(code_links):
         else:
             valid_codes.append(link)
     return valid_codes
+
+def validate_code_requests(code_links):
+    print(f"Stage Two Validation")
+    valid_codes = []
+    for link in code_links:
+        print(f"Validating {link.get('Coupon_code')}")
+        cookies = {
+            'language': 'en',
+            'inquiry_language': 'en_US',
+            'gdpr_section': 'true',
+        }
+    
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0',
+            'Accept': 'application/json, text/javascript, */*; q=0.01',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Origin': 'https://event.withhive.com',
+            'DNT': '1',
+            'Connection': 'keep-alive',
+            'Referer': 'https://event.withhive.com/ci/smon/evt_coupon',
+            'Sec-Fetch-Dest': 'empty',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Site': 'same-origin',
+        }
+    
+        data = {
+        'country': 'US',
+        'lang': 'en',
+        'server': 'global',
+        'hiveid': get_hive_id(),
+        'coupon': link.get('Coupon_code').split("/")[-1]
+        #'coupon': 'reloadedshowcase'
+        }
+    
+        response = requests.post('https://event.withhive.com/ci/smon/evt_coupon/useCoupon', headers=headers, cookies=cookies, data=data)
+        print(f"Response from request")
+        response = json.loads(response.text)
+        print(get_hive_id())
+        print(response)
+        if response.get('retMsg') == "The coupon gift has been sent.":
+            valid_codes.append(link)
+        else:
+            print(f'Invalid code link: {link}')
+    return valid_codes
+
+def get_hive_id() -> str:
+    print("Getting used codes...")
+    try:
+        client = boto3.client('ssm')
+        response = client.get_parameter(Name="/sph/sw/hive_id",WithDecryption=True)
+        print(response)
+        return response['Parameter']['Value']
+    except Exception as e:
+        print(f"Error getting secret: {e}")
+        return None
       
 def get_active_codes() -> list:
     try:
@@ -84,6 +143,7 @@ def lambda_handler(event, context):
     #existing_codes = ast.literal_eval(existing_codes)
     new_codes, existing_codes = get_valid_codes(existing_codes)
     valid_codes = validate_codes(new_codes)
+    valid_codes = validate_code_requests(valid_codes)
     response = {'codes': valid_codes}
     print(response)
     return response
